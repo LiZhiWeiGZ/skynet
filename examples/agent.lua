@@ -10,6 +10,16 @@ local send_request
 local CMD = {}
 local REQUEST = {}
 local client_fd
+local hbSession
+
+local function send_package(pack)
+	local package = string.pack(">s2", pack)
+	socket.write(client_fd, package)
+end
+
+local function send2client(path,... )
+	send_package(send_request (path,...))
+end
 
 function REQUEST:get()
 	print("get", self.what)
@@ -23,24 +33,28 @@ function REQUEST:set()
 end
 
 function REQUEST:handshake()
-	return { msg = "Welcome to skynet, I will send heartbeat every 5 sec." }
+	local self = REQUEST
+	hbSession = skynet.timeout(1000, self.quit)
+	send2client("handshake", { msg = "Welcome to skynet, I will send heartbeat every 5 sec." })
 end
 
-function REQUEST:quit()
+function REQUEST:heartbeat()
+	local self = REQUEST
+	skynet.remove_timeout(hbSession)
+	hbSession = skynet.timeout(1000, self.quit)
+end
+
+function REQUEST.quit()
 	skynet.call(WATCHDOG, "lua", "close", client_fd)
 end
 
 local function request(name, args, response)
 	local f = assert(REQUEST[name])
 	local r = f(args)
-	if response then
-		return response(r)
-	end
-end
-
-local function send_package(pack)
-	local package = string.pack(">s2", pack)
-	socket.write(client_fd, package)
+	-- skynet.error("request---%s",r)
+	-- if response then
+	-- 	return response(r)
+	-- end
 end
 
 skynet.register_protocol {
@@ -78,7 +92,8 @@ function CMD.start(conf)
 	send_request = host:attach(sprotoloader.load(2))
 	skynet.fork(function()
 		while true do
-			send_package(send_request "heartbeat")
+			send2client("heartbeat")
+			-- send_package(send_request "heartbeat")
 			skynet.sleep(500)
 		end
 	end)

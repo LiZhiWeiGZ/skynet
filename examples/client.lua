@@ -99,7 +99,9 @@ local function dispatch_package()
 end
 
 send_request("handshake")
-send_request("set", { what = "hello", value = "world" })
+-- send_request("helloworld")
+
+-- send_request("set", { what = "hello", value = "world" })
 while true do
 	dispatch_package()
 	local cmd = socket.readstdin()
@@ -107,7 +109,8 @@ while true do
 		if cmd == "quit" then
 			send_request("quit")
 		else
-			send_request("get", { what = cmd })
+			send_request("heartbeat")
+			-- send_request("get", { what = cmd })
 		end
 	else
 		socket.usleep(100)

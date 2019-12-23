@@ -14,7 +14,9 @@ handshake 1 {
 	}
 }
 
-get 2 {
+heartbeat 2 {}
+
+get 3 {
 	request {
 		what 0 : string
 	}
@@ -23,15 +25,32 @@ get 2 {
 	}
 }
 
-set 3 {
+set 4 {
 	request {
 		what 0 : string
 		value 1 : string
 	}
 }
 
-quit 4 {}
+quit 5 {}
 
+ping 6 {
+	response {
+		msg 0  : string
+	}
+}
+
+helloworld 7 {
+	response {
+		msg 0  : string
+	}
+}
+
+hall 8 {
+	response {
+		msg 0  : string
+	}
+}
 ]]
 
 proto.s2c = sprotoparser.parse [[
@@ -41,6 +60,13 @@ proto.s2c = sprotoparser.parse [[
 }
 
 heartbeat 1 {}
+
+handshake 2 {
+	request {
+		msg 0  : string
+	}
+}
+
 ]]
 
 return proto

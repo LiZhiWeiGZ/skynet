@@ -1,4 +1,5 @@
 local skynet = require "skynet"
+local snax = require "skynet.snax"
 
 local CMD = {}
 local SOCKET = {}
@@ -8,6 +9,8 @@ local agent = {}
 function SOCKET.open(fd, addr)
 	skynet.error("New client from : " .. addr)
 	agent[fd] = skynet.newservice("agent")
+	-- agent[fd] = snax.newservice("newagent")
+	-- agent[fd].post.start({ gate = gate, client = fd, watchdog = skynet.self() })
 	skynet.call(agent[fd], "lua", "start", { gate = gate, client = fd, watchdog = skynet.self() })
 end
 
@@ -18,6 +21,7 @@ local function close_agent(fd)
 		skynet.call(gate, "lua", "kick", fd)
 		-- disconnect never return
 		skynet.send(a, "lua", "disconnect")
+		-- a.post.exit()
 	end
 end
 
