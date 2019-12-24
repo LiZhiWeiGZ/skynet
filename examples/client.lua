@@ -1,6 +1,8 @@
 package.cpath = "luaclib/?.so"
 package.path = "lualib/?.lua;examples/?.lua"
 
+local cjson = require "cjson"
+
 if _VERSION ~= "Lua 5.3" then
 	error "Use lua 5.3"
 end

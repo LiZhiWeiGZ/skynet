@@ -2,6 +2,7 @@ local skynet = require "skynet"
 local socket = require "skynet.socket"
 local sproto = require "sproto"
 local sprotoloader = require "sprotoloader"
+local cjson = require "cjson"
 
 local WATCHDOG
 local host
